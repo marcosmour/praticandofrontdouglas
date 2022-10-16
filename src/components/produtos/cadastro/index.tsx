@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Layout, Input } from 'components'
 
+
 export const CadastroProduto: React.FC = () => {
 
   const [sku, setSku] = useState<string>('')
