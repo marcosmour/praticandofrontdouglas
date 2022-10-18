@@ -1,25 +1,55 @@
 import { useState } from 'react'
 import { Layout, Input } from 'components'
-
+import { useProdutoService } from 'app/services'
+import { Produto } from 'app/models/produtos'
+import { parse } from 'node:path/win32'
 
 export const CadastroProduto: React.FC = () => {
+
+  const service = useProdutoService()
 
   const [sku, setSku] = useState<string>('')
   const [preco, setPreco] = useState<string>('')
   const [nome, setNome] = useState<string>('')
   const [descricao, setDescricao] = useState<string>('')
+  const [id, setId] = useState<number>()
+  const [cadastro, setCadastro] = useState<string>()
 
   const submit = () => {
-    const produto = {
+    const produto: Produto = {
       sku,
-      preco,
+      preco: parseFloat(preco),
       nome,
       descricao
     }
-    console.log(produto)
+    service
+      .salvar(produto)
+      .then(produtoResposta => {
+        setId(produtoResposta.id)
+        setCadastro(produtoResposta.cadastro)
+      })
+
   }
+
   return (
     <Layout titulo="Produtos">
+      { id &&
+        <div className="columns">
+          <Input label="Código:"
+            columnClasses="is-half"
+            value={id}
+            id="inputId"
+            disabled />
+
+          <Input label="Data Cadastro:"
+            columnClasses="is-half"
+            value={cadastro}
+            id="inputDataCadastro"
+            disabled />
+        </div>
+
+      }
+
       <div className="columns">
         <Input label="SKU: *"
           columnClasses="is-half"
@@ -37,13 +67,13 @@ export const CadastroProduto: React.FC = () => {
       </div>
 
       <div className="columns">
-      <Input label="Nome: *"
-          columnClasses="is-half"
+        <Input label="Nome: *"
+          columnClasses="is-full"
           onChange={setNome}
           value={nome}
           id="inputNome"
           placeholder="Digite o Nome do produto" />
-       
+
       </div>
 
       <div className="columns">
